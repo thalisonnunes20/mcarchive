@@ -18,5 +18,10 @@ python manage.py migrate --noinput
 echo "==> Coletando arquivos estaticos..."
 python manage.py collectstatic --noinput
 
+if [ -n "$DJANGO_SUPERUSER_USERNAME" ] && [ -n "$DJANGO_SUPERUSER_PASSWORD" ]; then
+  echo "==> Criando superuser automatico ($DJANGO_SUPERUSER_USERNAME)..."
+  python manage.py createsuperuser --noinput || true
+fi
+
 echo "==> Iniciando Nginx e Gunicorn via Supervisor..."
 exec "$@"

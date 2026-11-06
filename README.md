@@ -48,9 +48,22 @@ O site estará acessível diretamente em `http://localhost` (ou na porta mapeada
 A rota do painel de administração customizada é:
 * `http://SEU_IP_OU_DOMINIO/mca-painel/`
 
-Para criar o primeiro usuário administrador no container:
+### Como Criar o Usuário Administrador
+
+#### Método 1: Automaticamente via Variáveis de Ambiente (Recomendado no Compose/Portainer)
+Basta adicionar as variáveis na sua stack:
+```yaml
+environment:
+  - DJANGO_SUPERUSER_USERNAME=admin
+  - DJANGO_SUPERUSER_PASSWORD=sua_senha_segura
+  - DJANGO_SUPERUSER_EMAIL=admin@exemplo.com
+```
+O container criará o usuário administrador automaticamente durante a inicialização.
+
+#### Método 2: Manualmente via Terminal do Container
+Caso o container já esteja em execução:
 ```bash
-docker compose -f docker-compose.sqlite.yml exec mcarchive python manage.py createsuperuser
+docker exec -it mcarchive_standalone python manage.py createsuperuser
 ```
 
 ---
