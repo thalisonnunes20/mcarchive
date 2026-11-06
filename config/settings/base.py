@@ -9,6 +9,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 SECRET_KEY = config("SECRET_KEY", default="django-insecure-mca-default-secret-key-change-in-production-1234567890")
 ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="*", cast=Csv())
 
+# CSRF Trusted Origins (obrigatorio no Django 4+ para requisicoes via HTTPS e Proxy Reverso)
+_raw_csrf = config("CSRF_TRUSTED_ORIGINS", default="", cast=Csv())
+if _raw_csrf and any(_raw_csrf):
+    CSRF_TRUSTED_ORIGINS = [orig.strip() for orig in _raw_csrf if orig.strip()]
+else:
+    CSRF_TRUSTED_ORIGINS = []
+    for _host in ALLOWED_HOSTS:
+        _h = _host.strip()
+        if _h and _h != "*":
+            if not _h.startswith("http://") and not _h.startswith("https://"):
+                CSRF_TRUSTED_ORIGINS.append(f"https://{_h}")
+                CSRF_TRUSTED_ORIGINS.append(f"http://{_h}")
+            else:
+                CSRF_TRUSTED_ORIGINS.append(_h)
+
 # ------------------------------------------------------------------
 # Aplicativos
 # ------------------------------------------------------------------
