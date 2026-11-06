@@ -2,6 +2,8 @@
 
 Plataforma web para preservação e compartilhamento de mods, modpacks, server jars, mapas e tutoriais clássicos de Minecraft (1.4.7 até 1.16.5+).
 
+A imagem oficial é All-in-One: executa o Django (via Gunicorn) e o servidor Nginx integrados dentro de um único container gerenciado pelo Supervisor, eliminando a necessidade de múltiplos containers.
+
 ---
 
 ## Imagens Docker no GitHub Packages (GHCR)
@@ -14,7 +16,7 @@ ghcr.io/thalisonnunes20/mcarchive:latest
 
 ---
 
-## Como Executar com Docker Compose
+## Como Executar com Docker Compose (Container Unico)
 
 ### Opção 1: Stack Simplificada com SQLite (Zero-Config / Sem .env)
 
@@ -24,7 +26,7 @@ Para rodar imediatamente sem banco de dados externo e sem precisar criar `.env`:
 docker compose -f docker-compose.sqlite.yml up -d
 ```
 
-### Opção 2: Deploy de Produção com GitHub Packages e PostgreSQL
+### Opção 2: Deploy de Produção com Imagem Pronta do GHCR
 
 ```bash
 docker compose -f docker-compose.prod.yml up -d
@@ -37,18 +39,18 @@ cp .env.example .env
 docker compose up -d --build
 ```
 
-O site estará acessível em `http://localhost`.
+O site estará acessível diretamente em `http://localhost` (ou na porta que você mapear no host, ex: `8180:80`).
 
 ---
 
 ## Painel Administrativo
 
 A rota do painel de administração customizada é:
-* `http://localhost/mca-painel/`
+* `http://SEU_IP_OU_DOMINIO/mca-painel/`
 
 Para criar o primeiro usuário administrador no container:
 ```bash
-docker compose -f docker-compose.sqlite.yml exec web python manage.py createsuperuser
+docker compose -f docker-compose.sqlite.yml exec mcarchive python manage.py createsuperuser
 ```
 
 ---
@@ -63,19 +65,10 @@ docker compose -f docker-compose.sqlite.yml exec web python manage.py createsupe
 
 ---
 
-## Atenção ao Deploy com Nginx (Portainer / OMV)
-
-Antes de iniciar a stack (Deploy the stack) no Portainer:
-* Crie manualmente as pastas pelo SSH no host.
-* Crie o arquivo `default.conf` no caminho mapeado do host antes de subir a stack.
-* Se o arquivo `default.conf` não existir no host no momento da criação, o Docker criará um diretório chamado `default.conf`, fazendo com que o container do Nginx falhe ao iniciar.
-
----
-
 ## Banco de Dados (SQLite ou PostgreSQL)
 
 * **SQLite (Padrão / Zero-Config)**: Se nenhuma variável `DB_NAME` for definida no arquivo `.env`, o sistema utiliza SQLite localmente de forma automática.
-* **PostgreSQL**: Para utilizar PostgreSQL, preencha as variáveis `DB_NAME`, `DB_USER` e `DB_PASSWORD` no arquivo `.env`.
+* **PostgreSQL**: Para utilizar PostgreSQL externo, preencha as variáveis `DB_NAME`, `DB_USER`, `DB_PASSWORD` e `DB_HOST` no arquivo `.env`.
 
 ---
 

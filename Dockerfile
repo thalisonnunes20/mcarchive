@@ -1,39 +1,41 @@
 FROM python:3.12-slim
 
-# Evita geração de bytecode .pyc e força flush imediato de stdout/stderr
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PORT=8000
 
 WORKDIR /app
 
-# Instala ferramentas essenciais do sistema operacional
+# Instala ferramentas essenciais, PostgreSQL client, Nginx e Supervisor
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     libpq-dev \
     curl \
     postgresql-client \
+    nginx \
+    supervisor \
     && rm -rf /var/lib/apt/lists/*
 
-# Copia requisitos e instala dependências de produção
+# Remove o site default do Nginx para evitar conflito na porta 80
+RUN rm -f /etc/nginx/sites-enabled/default /etc/nginx/sites-available/default
+
+# Copia requisitos e instala dependencias de producao
 COPY requirements/ /app/requirements/
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements/production.txt
 
-# Copia todo o código da aplicação
+# Copia todo o codigo da aplicacao
 COPY . /app/
 
-# Cria usuário não-root por segurança e ajusta permissões
-RUN addgroup --system appgroup && \
-    adduser --system --ingroup appgroup appuser && \
-    mkdir -p /app/staticfiles /app/media /app/logs /app/data && \
-    chown -R appuser:appgroup /app && \
+# Configura Nginx e Supervisor dentro do container
+COPY nginx/default.conf /etc/nginx/conf.d/default.conf
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# Cria pastas necessarias e garante permissao no entrypoint
+RUN mkdir -p /app/staticfiles /app/media /app/logs /app/data && \
     chmod +x /app/entrypoint.sh
 
-USER appuser
-
-EXPOSE 8000
+EXPOSE 80
 
 ENTRYPOINT ["/app/entrypoint.sh"]
-CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3", "--timeout", "120"]
-
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
