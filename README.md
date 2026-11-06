@@ -76,6 +76,7 @@ docker exec -it mcarchive_standalone python manage.py createsuperuser
 * **SECURE_SSL_REDIRECT, SESSION_COOKIE_SECURE, CSRF_COOKIE_SECURE**:
   * Se o tráfego chegar ao container como HTTP (quando o Nginx Proxy Manager ou Cloudflare gerenciam o certificado SSL antes de repassar ao Django), mantenha como `False`.
   * Se alterar para `True`, o Django pode entrar em loop de redirecionamento. O valor `False` é o padrão para quem gerencia certificados externamente no NPM.
+* **DJANGO_SUPERUSER_USERNAME / DJANGO_SUPERUSER_PASSWORD**: Define o usuário e a senha do administrador para criação automática no primeiro boot do container (opcional: `DJANGO_SUPERUSER_EMAIL`).
 
 ---
 
@@ -98,6 +99,9 @@ services:
       - SECRET_KEY=chave_secreta_longa_e_aleatoria_para_producao
       - DB_NAME=
       - DB_SQLITE_PATH=/app/data/db.sqlite3
+      - DJANGO_SUPERUSER_USERNAME=admin
+      - DJANGO_SUPERUSER_PASSWORD=sua_senha_segura_aqui
+      - DJANGO_SUPERUSER_EMAIL=admin@exemplo.com
       - SECURE_SSL_REDIRECT=False
       - SESSION_COOKIE_SECURE=False
       - CSRF_COOKIE_SECURE=False
