@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+
+  <defs>
+    <linearGradient id="top" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f472b6"/>
+      <stop offset="100%" stop-color="#c084fc"/>
+    </linearGradient>
+
+    <linearGradient id="left" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#9333ea"/>
+      <stop offset="100%" stop-color="#7e22ce"/>
+    </linearGradient>
+
+    <linearGradient id="right" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ec4899"/>
+      <stop offset="100%" stop-color="#be185d"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Fundo transparente -->
+
+  <!-- Cubo externo -->
+  <polygon points="128 28 210 76 128 124 46 76"
+           fill="url(#top)"/>
+
+  <polygon points="46 76 128 124 128 220 46 172"
+           fill="url(#left)"/>
+
+  <polygon points="128 124 210 76 210 172 128 220"
+           fill="url(#right)"/>
+
+  <!-- Núcleo -->
+  <polygon points="128 72 172 98 128 124 84 98"
+           fill="#ffffff"/>
+
+  <polygon points="84 98 128 124 128 176 84 150"
+           fill="#f5f3ff"/>
+
+  <polygon points="128 124 172 98 172 150 128 176"
+           fill="#e9d5ff"/>
+
+</svg>

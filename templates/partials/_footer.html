@@ -1,0 +1,70 @@
+<footer class="footer mt-5 py-4">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-4">
+        <h6 class="text-light mb-3">
+          <i class="bi bi-box text-danger"></i> Minecraft Archive
+        </h6>
+        <p class="small">
+          Preservando mods, modpacks, mapas e ferramentas das versões clássicas do Minecraft para fins educativos e de preservação.
+        </p>
+      </div>
+      <div class="col-md-4">
+        <h6 class="text-light mb-3">Navegação</h6>
+        <ul class="list-unstyled small">
+          <li><a href="{% url 'core:home' %}">Início</a></li>
+          <li><a href="{% url 'mods:lista' %}">Mods</a></li>
+          <li><a href="{% url 'modpacks:lista' %}">Modpacks</a></li>
+          <li><a href="{% url 'serverjars:lista' %}">Server Jars</a></li>
+          <li><a href="{% url 'worlds:lista' %}">Worlds</a></li>
+          <li><a href="{% url 'tutorials:lista' %}">Tutoriais</a></li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <h6 class="text-light mb-3">Informações</h6>
+        <p class="small">
+          <strong>Minecraft Archive</strong> — Preservando mods históricos
+        </p>
+        <p class="small text-muted">
+          Conteúdo para fins educativos e de preservação. Minecraft é marca da Mojang Studios.
+        </p>
+      </div>
+    </div>
+    <hr style="border-color: rgba(48, 54, 61, 0.5); margin: 2rem 0;">
+    <div class="text-center">
+      <p class="small text-muted mb-0">
+        © 2026 Minecraft Archive. Todos os direitos reservados.
+      </p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    margin-top: auto;
+  }
+
+  .footer h6 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+  }
+
+  .footer ul li {
+    margin-bottom: 0.5rem;
+  }
+
+  .footer ul li a {
+    color: #8b949e;
+    transition: color 0.3s ease;
+  }
+
+  .footer ul li a:hover {
+    color: #ff2e63;
+  }
+
+  @media (max-width: 768px) {
+    .footer {
+      padding: 2rem 0 !important;
+    }
+  }
+</style>

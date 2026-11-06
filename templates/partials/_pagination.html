@@ -1,0 +1,35 @@
+{% if page_obj.has_other_pages %}
+  <nav class="mt-4">
+    <ul class="pagination justify-content-center">
+
+      {% if page_obj.has_previous %}
+        <li class="page-item">
+          <a class="page-link bg-dark text-light border-secondary"
+             href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+            <i class="bi bi-chevron-left"></i>
+          </a>
+        </li>
+      {% endif %}
+
+      {% for num in page_obj.paginator.page_range %}
+        <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+          <a class="page-link bg-dark border-secondary
+                     {% if page_obj.number == num %}text-white{% else %}text-light{% endif %}"
+             href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+            {{ num }}
+          </a>
+        </li>
+      {% endfor %}
+
+      {% if page_obj.has_next %}
+        <li class="page-item">
+          <a class="page-link bg-dark text-light border-secondary"
+             href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">
+            <i class="bi bi-chevron-right"></i>
+          </a>
+        </li>
+      {% endif %}
+
+    </ul>
+  </nav>
+{% endif %}

@@ -1,0 +1,90 @@
+# ==============================================================================
+# Python & Bytecode
+# ==============================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# ==============================================================================
+# Ambientes Virtuais (Virtual Environments)
+# ==============================================================================
+venv/
+env/
+ENV/
+.venv/
+env.bak/
+venv.bak/
+
+# ==============================================================================
+# Django & Arquivos Locais
+# ==============================================================================
+*.sqlite3
+*.sqlite3-journal
+db.sqlite3
+
+# Arquivos coletados de estáticos (gerados pelo collectstatic)
+staticfiles/
+
+# Logs de aplicação e servidor
+logs/*.log
+*.log
+
+# Uploads de mídia de usuários (arquivos pesados de mods, jars e packs)
+# Descomente a linha abaixo se quiser versionar apenas a estrutura de pastas
+media/mods/files/*
+media/modpacks/files/*
+media/serverjars/files/*
+media/worlds/files/*
+!media/**/.gitkeep
+
+# ==============================================================================
+# Variáveis de Ambiente e Segredos (NUNCA ENVIAR AO GITHUB)
+# ==============================================================================
+.env
+.env.local
+.env.*.local
+*.env
+
+# ==============================================================================
+# Docker & Containers
+# ==============================================================================
+.docker/
+
+# ==============================================================================
+# Editores & IDEs
+# ==============================================================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+
+# ==============================================================================
+# Sistema Operacional
+# ==============================================================================
+.DS_Store
+Thumbs.db
+desktop.ini
+

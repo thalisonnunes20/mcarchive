@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}{{ serverjar.title }} — Minecraft Archive{% endblock %}
+
+{% block content %}
+  <div class="row">
+
+    <div class="col-md-8">
+      {% if serverjar.cover_image %}
+        <img src="{{ serverjar.cover_image.url }}" class="img-fluid rounded mb-4"
+             style="max-height:350px; width:100%; object-fit:cover;"
+             alt="{{ serverjar.title }}">
+      {% endif %}
+
+      <h2 class="text-white">{{ serverjar.title }}</h2>
+
+      <div class="d-flex flex-wrap gap-2 mb-3">
+        <span class="badge badge-version">
+          <i class="bi bi-controller"></i> MC {{ serverjar.minecraft_version }}
+        </span>
+        <span class="badge bg-secondary">
+          <i class="bi bi-server"></i> {{ serverjar.get_server_type_display }}
+        </span>
+        <span class="badge bg-secondary">
+          <i class="bi bi-download"></i> {{ serverjar.download_count }} downloads
+        </span>
+        <span class="badge bg-secondary">
+          <i class="bi bi-calendar"></i> {{ serverjar.created_at|date:"d/m/Y" }}
+        </span>
+      </div>
+
+      <p class="lead" style="color:#a0aec0;">{{ serverjar.short_description }}</p>
+      <hr class="border-secondary">
+      <div class="text-light">{{ serverjar.content|linebreaks }}</div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card mb-4">
+        <div class="card-body text-center">
+          <h5 class="card-title">
+            <i class="bi bi-download text-danger"></i> Download
+          </h5>
+          <ul class="list-unstyled mb-3" style="color:#a0aec0;">
+            {% if serverjar.has_local_file %}
+              <li>
+                <i class="bi bi-file-earmark-zip me-1"></i>
+                {{ serverjar.nome_arquivo }}
+              </li>
+              {% if serverjar.tamanho_arquivo_mb %}
+                <li>
+                  <i class="bi bi-hdd me-1"></i>
+                  {{ serverjar.tamanho_arquivo_mb }} MB
+                </li>
+              {% endif %}
+            {% else %}
+              <li>
+                <i class="bi bi-box-arrow-up-right me-1"></i>
+                Link externo
+              </li>
+            {% endif %}
+            <li>
+              <i class="bi bi-download me-1"></i>
+              {{ serverjar.download_count }} downloads
+            </li>
+          </ul>
+
+          <a href="{% url 'serverjars:download' serverjar.slug %}"
+             class="btn btn-primary btn-lg w-100" id="btn-download">
+            <i class="bi bi-download"></i> Baixar Server Jar
+          </a>
+          <div id="download-feedback" class="mt-2 small d-none"
+               style="color:#48bb78;">
+            <i class="bi bi-check-circle"></i> Download iniciado!
+          </div>
+        </div>
+      </div>
+
+      {% if relacionados %}
+        <div class="card">
+          <div class="card-body">
+            <h6 class="card-title">
+              <i class="bi bi-server text-danger"></i> Mesma versão
+            </h6>
+            <ul class="list-unstyled mb-0">
+              {% for rel in relacionados %}
+                <li class="mb-2">
+                  <a href="{% url 'serverjars:detalhe' rel.slug %}"
+                     class="text-light text-decoration-none small">
+                    <i class="bi bi-arrow-right text-danger me-1"></i>
+                    {{ rel.title }}
+                    <span style="color:#6b7fa3;">
+                      ({{ rel.get_server_type_display }})
+                    </span>
+                  </a>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.getElementById("btn-download").addEventListener("click", function () {
+    const feedback = document.getElementById("download-feedback");
+    feedback.classList.remove("d-none");
+    setTimeout(() => feedback.classList.add("d-none"), 4000);
+  });
+</script>
+{% endblock %}

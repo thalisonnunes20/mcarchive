@@ -1,0 +1,77 @@
+<nav class="navbar navbar-expand-lg navbar-dark mb-2">
+  <div class="container">
+
+    <a class="navbar-brand fw-bold" href="{% url 'core:home' %}">
+      <i class="bi bi-box text-danger"></i> Minecraft Archive
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navMenu">
+
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'core:home' %}">Início</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'mods:lista' %}">Mods</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'modpacks:lista' %}">Modpacks</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'serverjars:lista' %}">Server Jars</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'worlds:lista' %}">Worlds</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'tutorials:lista' %}">Tutoriais</a>
+        </li>
+      </ul>
+
+      <form action="{% url 'core:busca' %}" method="get"
+            class="w-100 w-lg-auto my-2 my-lg-0 me-lg-2">
+        <div class="input-group">
+          <input
+            class="form-control form-control-sm"
+            type="search"
+            name="q"
+            placeholder="Buscar..."
+            value="{{ request.GET.q|default:'' }}"
+          >
+          <button class="btn btn-sm btn-outline-danger" type="submit">
+            <i class="bi bi-search"></i>
+          </button>
+        </div>
+      </form>
+
+      {% if user.is_authenticated %}
+        <form method="post" action="{% url 'accounts:logout' %}"
+              class="w-100 w-lg-auto mt-2 mt-lg-0">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-sm btn-outline-secondary w-100 w-lg-auto">
+            <i class="bi bi-box-arrow-right"></i> Sair
+          </button>
+        </form>
+      {% endif %}
+
+    </div>
+  </div>
+</nav>
+
+<style>
+  @media (min-width: 992px) {
+    .w-lg-auto { width: auto !important; }
+  }
+  @media (max-width: 991px) {
+    #navMenu {
+      padding: 0.75rem 0;
+      border-top: 1px solid #0f3460;
+      margin-top: 0.5rem;
+    }
+    #navMenu .nav-link { padding: 0.5rem 0; }
+  }
+</style>

@@ -1,0 +1,368 @@
+{% extends "base.html" %}
+{% block title %}{{ mod.title }} — Minecraft Archive{% endblock %}
+
+{% block extra_css %}
+<style>
+  .detail-header {
+    background: linear-gradient(135deg, rgba(233, 69, 96, 0.1), rgba(255, 46, 99, 0.05));
+    border: 1px solid rgba(233, 69, 96, 0.2);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .detail-header::before {
+    content: '';
+    position: absolute;
+    top: -50%; right: -50%;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(233, 69, 96, 0.1), transparent);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .detail-header h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 2.5rem; font-weight: 800;
+    background: linear-gradient(135deg, #ff2e63, #e94560);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    position: relative; z-index: 1;
+  }
+  .detail-image {
+    border-radius: 12px; overflow: hidden;
+    margin-bottom: 2rem;
+    box-shadow: 0 12px 40px rgba(233, 69, 96, 0.2);
+    border: 1px solid rgba(48, 54, 61, 0.6);
+  }
+  .detail-image img { width: 100%; height: auto; display: block; }
+  .detail-badges {
+    display: flex; flex-wrap: wrap;
+    gap: 0.75rem; margin: 1.5rem 0;
+  }
+  .detail-badge {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    background: linear-gradient(135deg, rgba(22,27,34,0.8), rgba(22,27,34,0.6));
+    border: 1px solid rgba(48,54,61,0.6);
+    border-radius: 8px; font-size: 0.9rem;
+    transition: all 0.3s ease;
+  }
+  .detail-badge:hover {
+    border-color: rgba(233,69,96,0.5);
+    box-shadow: 0 4px 15px rgba(233,69,96,0.2);
+  }
+  .download-card {
+    background: linear-gradient(135deg, rgba(233,69,96,0.1), rgba(255,46,99,0.05));
+    border: 1px solid rgba(233,69,96,0.3);
+    border-radius: 12px; padding: 2rem;
+    text-align: center; margin-bottom: 2rem;
+    backdrop-filter: blur(10px);
+  }
+  .download-card h5 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700; color: #ff2e63; margin-bottom: 1.5rem;
+  }
+  .file-info {
+    background: rgba(22,27,34,0.5);
+    border-radius: 8px; padding: 1rem;
+    margin-bottom: 1.5rem; text-align: left;
+  }
+  .file-info-item {
+    display: flex; align-items: center;
+    gap: 0.75rem; padding: 0.5rem 0;
+    color: #8b949e; font-size: 0.9rem;
+  }
+  .file-info-item i { color: #ff2e63; font-size: 1.1rem; }
+
+  /* ===== SELETOR DE VERSÕES ===== */
+  .version-selector {
+    margin-bottom: 1.5rem;
+    text-align: left;
+  }
+  .version-selector label {
+    display: block;
+    color: #8b949e;
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+  }
+  .version-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    margin: 0.25rem;
+    background: rgba(22,27,34,0.6);
+    border: 1px solid rgba(48,54,61,0.6);
+    border-radius: 8px;
+    color: #8b949e;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+  }
+  .version-btn:hover {
+    border-color: rgba(233,69,96,0.5);
+    color: #ff2e63;
+    background: rgba(233,69,96,0.1);
+  }
+  .version-btn.active {
+    border-color: #ff2e63;
+    color: #ff2e63;
+    background: rgba(233,69,96,0.15);
+    font-weight: 600;
+  }
+
+  .detail-content {
+    background: linear-gradient(135deg, rgba(22,27,34,0.8), rgba(22,27,34,0.6));
+    border: 1px solid rgba(48,54,61,0.6);
+    border-radius: 12px; padding: 2rem;
+    margin-bottom: 2rem; backdrop-filter: blur(10px);
+    line-height: 1.8;
+  }
+  .detail-content p { color: #c9d1d9; margin-bottom: 1rem; }
+  .related-card {
+    background: linear-gradient(135deg, rgba(22,27,34,0.8), rgba(22,27,34,0.6));
+    border: 1px solid rgba(48,54,61,0.6);
+    border-radius: 12px; padding: 1.5rem;
+    backdrop-filter: blur(10px);
+  }
+  .related-card h6 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700; color: #ff2e63; margin-bottom: 1rem;
+  }
+  .related-list { list-style: none; padding: 0; margin: 0; }
+  .related-list li {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(48,54,61,0.4);
+  }
+  .related-list li:last-child { border-bottom: none; }
+  .related-list a {
+    color: #8b949e; text-decoration: none;
+    transition: all 0.3s ease;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .related-list a:hover { color: #ff2e63; padding-left: 0.5rem; }
+  .related-version { color: #8b949e; font-size: 0.85rem; }
+  .download-feedback {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 1rem;
+    background: rgba(34,197,94,0.1);
+    border: 1px solid rgba(34,197,94,0.3);
+    border-radius: 8px; color: #22c55e;
+    margin-top: 1rem;
+    animation: slideInUp 0.3s ease-out;
+  }
+  @keyframes slideInUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @media (max-width: 768px) {
+    .detail-header h2 { font-size: 1.8rem; }
+    .detail-badges { gap: 0.5rem; }
+    .detail-badge { font-size: 0.8rem; padding: 0.5rem 0.8rem; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+  <div class="row g-4">
+    <!-- MAIN CONTENT -->
+    <div class="col-lg-8">
+      <div class="detail-header">
+        <h2>{{ mod.title }}</h2>
+        <p class="lead text-muted mb-0">{{ mod.short_description }}</p>
+      </div>
+
+      {% if mod.cover_image %}
+        <div class="detail-image">
+          <img src="{{ mod.cover_image.url }}" alt="{{ mod.title }}" loading="lazy">
+        </div>
+      {% endif %}
+
+      <div class="detail-badges">
+        <div class="detail-badge">
+          <i class="bi bi-controller"></i>
+          <span>MC {{ mod.minecraft_version }}</span>
+        </div>
+        <div class="detail-badge">
+          <i class="bi bi-tag"></i>
+          <span>{{ mod.category.name }}</span>
+        </div>
+        <div class="detail-badge">
+          <i class="bi bi-person"></i>
+          <span>{{ mod.mod_author }}</span>
+        </div>
+        <div class="detail-badge">
+          <i class="bi bi-download"></i>
+          <span>{{ mod.download_count }} downloads</span>
+        </div>
+        <div class="detail-badge">
+          <i class="bi bi-calendar"></i>
+          <span>{{ mod.created_at|date:"d/m/Y" }}</span>
+        </div>
+      </div>
+
+      <div class="detail-content">
+        {{ mod.content|linebreaks }}
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="col-lg-4">
+      <div class="download-card">
+        <h5><i class="bi bi-download"></i> Download</h5>
+
+        {% if versoes %}
+          <!-- SELETOR DE VERSÕES -->
+          <div class="version-selector">
+            <label><i class="bi bi-layers"></i> Selecione a versão:</label>
+            <div>
+              {% for v in versoes %}
+                <a href="#"
+                   class="version-btn {% if forloop.first %}active{% endif %}"
+                   data-version-id="{{ v.id }}"
+                   data-has-file="{{ v.has_local_file|yesno:'true,false' }}"
+                   data-filename="{{ v.nome_arquivo|default:'' }}"
+                   data-filesize="{{ v.tamanho_arquivo_mb|default:'' }}"
+                   data-downloads="{{ v.download_count }}"
+                   data-download-url="{% url 'mods:version_download' mod.slug v.id %}">
+                  {{ v.minecraft_version }}
+                </a>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- INFO DO ARQUIVO (atualiza via JS) -->
+          <div class="file-info" id="version-info">
+            <div class="file-info-item" id="info-file">
+              <i class="bi bi-file-earmark-zip"></i>
+              <span id="info-filename">{{ versoes.0.nome_arquivo|default:"Link externo" }}</span>
+            </div>
+            <div class="file-info-item" id="info-size-row"
+                 {% if not versoes.0.tamanho_arquivo_mb %}style="display:none"{% endif %}>
+              <i class="bi bi-hdd"></i>
+              <span id="info-size">{{ versoes.0.tamanho_arquivo_mb|default:"" }} MB</span>
+            </div>
+            <div class="file-info-item">
+              <i class="bi bi-download"></i>
+              <span id="info-downloads">{{ versoes.0.download_count }} downloads</span>
+            </div>
+          </div>
+
+          <a href="{% url 'mods:version_download' mod.slug versoes.0.id %}"
+             class="btn btn-primary btn-lg w-100"
+             id="btn-download">
+            <i class="bi bi-download"></i> Baixar Mod
+          </a>
+
+        {% else %}
+          <!-- SEM VERSÕES — download padrão -->
+          <div class="file-info">
+            {% if mod.has_local_file %}
+              <div class="file-info-item">
+                <i class="bi bi-file-earmark-zip"></i>
+                <span>{{ mod.nome_arquivo }}</span>
+              </div>
+              {% if mod.tamanho_arquivo_mb %}
+                <div class="file-info-item">
+                  <i class="bi bi-hdd"></i>
+                  <span>{{ mod.tamanho_arquivo_mb }} MB</span>
+                </div>
+              {% endif %}
+            {% else %}
+              <div class="file-info-item">
+                <i class="bi bi-box-arrow-up-right"></i>
+                <span>Link externo</span>
+              </div>
+            {% endif %}
+            <div class="file-info-item">
+              <i class="bi bi-download"></i>
+              <span>{{ mod.download_count }} downloads</span>
+            </div>
+          </div>
+
+          <a href="{% url 'mods:download' mod.slug %}"
+             class="btn btn-primary btn-lg w-100"
+             id="btn-download">
+            <i class="bi bi-download"></i> Baixar Mod
+          </a>
+        {% endif %}
+
+        <div id="download-feedback" class="download-feedback d-none">
+          <i class="bi bi-check-circle"></i>
+          <span>Download iniciado!</span>
+        </div>
+      </div>
+
+      {% if relacionados %}
+        <div class="related-card">
+          <h6><i class="bi bi-puzzle"></i> Mods Relacionados</h6>
+          <ul class="related-list">
+            {% for rel in relacionados %}
+              <li>
+                <a href="{% url 'mods:detalhe' rel.slug %}">
+                  <i class="bi bi-box-arrow-in-right"></i>
+                  <div>
+                    <div>{{ rel.title }}</div>
+                    <div class="related-version">({{ rel.minecraft_version }})</div>
+                  </div>
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Feedback de download
+  const btnDownload = document.getElementById("btn-download");
+  if (btnDownload) {
+    btnDownload.addEventListener("click", function () {
+      const feedback = document.getElementById("download-feedback");
+      feedback.classList.remove("d-none");
+      setTimeout(() => feedback.classList.add("d-none"), 4000);
+    });
+  }
+
+  // Seletor de versões
+  const versionBtns = document.querySelectorAll(".version-btn");
+  versionBtns.forEach(btn => {
+    btn.addEventListener("click", function (e) {
+      e.preventDefault();
+
+      // Atualizar botão ativo
+      versionBtns.forEach(b => b.classList.remove("active"));
+      this.classList.add("active");
+
+      // Atualizar informações
+      const hasFile   = this.dataset.hasFile === "true";
+      const filename  = this.dataset.filename;
+      const filesize  = this.dataset.filesize;
+      const downloads = this.dataset.downloads;
+      const url       = this.dataset.downloadUrl;
+
+      document.getElementById("info-filename").textContent = hasFile ? filename : "Link externo";
+      document.getElementById("info-downloads").textContent = downloads + " downloads";
+
+      const sizeRow = document.getElementById("info-size-row");
+      if (filesize) {
+        document.getElementById("info-size").textContent = filesize + " MB";
+        sizeRow.style.display = "flex";
+      } else {
+        sizeRow.style.display = "none";
+      }
+
+      // Atualizar link de download
+      document.getElementById("btn-download").href = url;
+    });
+  });
+</script>
+{% endblock %}
