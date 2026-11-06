@@ -53,6 +53,25 @@ docker compose -f docker-compose.sqlite.yml exec web python manage.py createsupe
 
 ---
 
+## Configuração das Variáveis de Ambiente
+
+* **ALLOWED_HOSTS**: Deve conter o domínio ou IP por onde a aplicação será acessada. Se for expor via Nginx Proxy Manager, coloque o domínio (ex: `mcarchive.tsnunes.lan` ou `mcarchive.seudominio.com`). Usar `*` funciona para testes, mas é menos seguro em produção.
+* **DB_NAME / DB_SQLITE_PATH**: Ao utilizar SQLite, o Django precisa do caminho do arquivo. A configuração `DB_SQLITE_PATH=/app/data/db.sqlite3` instrui o container a salvar o banco exatamente na pasta mapeada no host/OMV. Deixe `DB_NAME` vazio, pois as configurações priorizam o SQLite automaticamente quando `DB_NAME` não é definido.
+* **SECURE_SSL_REDIRECT, SESSION_COOKIE_SECURE, CSRF_COOKIE_SECURE**:
+  * Se o tráfego chegar ao container como HTTP (quando o Nginx Proxy Manager ou Cloudflare gerenciam o certificado SSL antes de repassar ao Django), mantenha como `False`.
+  * Se alterar para `True`, o Django pode entrar em loop de redirecionamento, a menos que haja configuração específica de proxy header. Deixar em `False` é o padrão para quem gerencia certificados externamente no NPM.
+
+---
+
+## Atenção ao Deploy com Nginx (Portainer / OMV)
+
+Antes de iniciar a stack (Deploy the stack) no Portainer:
+* Crie manualmente as pastas pelo SSH no host.
+* Crie o arquivo `default.conf` no caminho mapeado do host antes de subir a stack.
+* Se o arquivo `default.conf` não existir no host no momento da criação, o Docker criará um diretório chamado `default.conf`, fazendo com que o container do Nginx falhe ao iniciar.
+
+---
+
 ## Banco de Dados (SQLite ou PostgreSQL)
 
 * **SQLite (Padrão / Zero-Config)**: Se nenhuma variável `DB_NAME` for definida no arquivo `.env`, o sistema utiliza SQLite localmente de forma automática.
