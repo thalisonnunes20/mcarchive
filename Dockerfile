@@ -26,7 +26,7 @@ COPY . /app/
 # Cria usuário não-root por segurança e ajusta permissões
 RUN addgroup --system appgroup && \
     adduser --system --ingroup appgroup appuser && \
-    mkdir -p /app/staticfiles /app/media /app/logs && \
+    mkdir -p /app/staticfiles /app/media /app/logs /app/data && \
     chown -R appuser:appgroup /app && \
     chmod +x /app/entrypoint.sh
 

@@ -6,8 +6,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 # ------------------------------------------------------------------
 # Segurança
 # ------------------------------------------------------------------
-SECRET_KEY = config("SECRET_KEY")
-ALLOWED_HOSTS = config("ALLOWED_HOSTS", cast=Csv())
+SECRET_KEY = config("SECRET_KEY", default="django-insecure-mca-default-secret-key-change-in-production-1234567890")
+ALLOWED_HOSTS = config("ALLOWED_HOSTS", default="*", cast=Csv())
 
 # ------------------------------------------------------------------
 # Aplicativos
@@ -76,18 +76,29 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 
 # ------------------------------------------------------------------
-# Banco de dados
+# Banco de dados (Fallback automático para SQLite se não configurado)
 # ------------------------------------------------------------------
-DATABASES = {
-    "default": {
-        "ENGINE":   "django.db.backends.postgresql",
-        "NAME":     config("DB_NAME"),
-        "USER":     config("DB_USER"),
-        "PASSWORD": config("DB_PASSWORD"),
-        "HOST":     config("DB_HOST", default="localhost"),
-        "PORT":     config("DB_PORT", default="5432"),
+DB_NAME = config("DB_NAME", default="")
+
+if DB_NAME:
+    DATABASES = {
+        "default": {
+            "ENGINE":   config("DB_ENGINE", default="django.db.backends.postgresql"),
+            "NAME":     DB_NAME,
+            "USER":     config("DB_USER", default=""),
+            "PASSWORD": config("DB_PASSWORD", default=""),
+            "HOST":     config("DB_HOST", default="localhost"),
+            "PORT":     config("DB_PORT", default="5432"),
+        }
     }
-}
+else:
+    sqlite_path = config("DB_SQLITE_PATH", default=str(BASE_DIR / "db.sqlite3"))
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": Path(sqlite_path),
+        }
+    }
 
 # ------------------------------------------------------------------
 # Validação de senhas
