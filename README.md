@@ -16,25 +16,40 @@ ghcr.io/thalisonnunes20/mcarchive:latest
 
 ## Como Executar com Docker Compose
 
-### Opção 1: Usando a imagem pronta do GitHub (Recomendado para Deploy)
+### Opção 1: Stack Simplificada com SQLite (Zero-Config / Sem .env)
+
+Para rodar imediatamente sem banco de dados externo e sem precisar criar `.env`:
+
+```bash
+docker compose -f docker-compose.sqlite.yml up -d
+```
+
+### Opção 2: Deploy de Produção com GitHub Packages e PostgreSQL
 
 ```bash
 docker compose -f docker-compose.prod.yml up -d
 ```
 
-O Docker irá baixar a imagem compilada do GitHub Packages e iniciar os serviços com Nginx na porta `80`.
-
-### Opção 2: Construindo localmente
+### Opção 3: Construindo localmente
 
 ```bash
-# 1. Copie o arquivo de variáveis (opcional se for usar SQLite)
 cp .env.example .env
-
-# 2. Suba a stack com build local
 docker compose up -d --build
 ```
 
 O site estará acessível em `http://localhost`.
+
+---
+
+## Painel Administrativo
+
+A rota do painel de administração customizada é:
+* `http://localhost/mca-painel/`
+
+Para criar o primeiro usuário administrador no container:
+```bash
+docker compose -f docker-compose.sqlite.yml exec web python manage.py createsuperuser
+```
 
 ---
 
