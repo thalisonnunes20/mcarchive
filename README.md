@@ -39,7 +39,7 @@ cp .env.example .env
 docker compose up -d --build
 ```
 
-O site estará acessível diretamente em `http://localhost` (ou na porta que você mapear no host, ex: `8180:80`).
+O site estará acessível diretamente em `http://localhost` (ou na porta mapeada no host, ex: `8180:80`).
 
 ---
 
@@ -57,11 +57,45 @@ docker compose -f docker-compose.sqlite.yml exec mcarchive python manage.py crea
 
 ## Configuração das Variáveis de Ambiente
 
-* **ALLOWED_HOSTS**: Deve conter o domínio ou IP por onde a aplicação será acessada. Se for expor via Nginx Proxy Manager, coloque o domínio (ex: `mcarchive.tsnunes.lan` ou `mcarchive.seudominio.com`). Usar `*` funciona para testes, mas é menos seguro em produção.
-* **DB_NAME / DB_SQLITE_PATH**: Ao utilizar SQLite, o Django precisa do caminho do arquivo. A configuração `DB_SQLITE_PATH=/app/data/db.sqlite3` instrui o container a salvar o banco exatamente na pasta mapeada no host/OMV. Deixe `DB_NAME` vazio, pois as configurações priorizam o SQLite automaticamente quando `DB_NAME` não é definido.
+* **ALLOWED_HOSTS**: Deve conter o domínio ou IP por onde a aplicação será acessada. Se for expor via Nginx Proxy Manager (NPM), coloque o domínio e os IPs locais (ex: `mcarchive.seudominio.com,localhost,127.0.0.1`).
+* **CSRF_TRUSTED_ORIGINS**: Obrigatório para submissão de formulários (como login) via HTTPS e Proxy Reverso (NPM, Cloudflare), evitando o erro `403 Proibido - Verificação CSRF falhou`. Informe a URL completa incluindo o protocolo (ex: `https://mcarchive.seudominio.com`). O sistema também auto-deriva essa lista a partir de `ALLOWED_HOSTS` caso não definida.
+* **DB_NAME / DB_SQLITE_PATH**: Ao utilizar SQLite, o Django precisa do caminho do arquivo. A configuração `DB_SQLITE_PATH=/app/data/db.sqlite3` instrui o container a salvar o banco exatamente na pasta mapeada no host. Deixe `DB_NAME` vazio, pois as configurações priorizam o SQLite automaticamente quando `DB_NAME` não é definido.
 * **SECURE_SSL_REDIRECT, SESSION_COOKIE_SECURE, CSRF_COOKIE_SECURE**:
   * Se o tráfego chegar ao container como HTTP (quando o Nginx Proxy Manager ou Cloudflare gerenciam o certificado SSL antes de repassar ao Django), mantenha como `False`.
-  * Se alterar para `True`, o Django pode entrar em loop de redirecionamento, a menos que haja configuração específica de proxy header. Deixar em `False` é o padrão para quem gerencia certificados externamente no NPM.
+  * Se alterar para `True`, o Django pode entrar em loop de redirecionamento. O valor `False` é o padrão para quem gerencia certificados externamente no NPM.
+
+---
+
+## Exemplo de Stack para Portainer / Reverse Proxy (NPM)
+
+Abaixo está o modelo completo e pronto para colar no editor de stacks do Portainer, utilizando volumes persistentes e porta customizada:
+
+```yaml
+services:
+  mcarchive:
+    image: ghcr.io/thalisonnunes20/mcarchive:latest
+    container_name: mcarchive_standalone
+    restart: unless-stopped
+    ports:
+      - "8180:80"
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings.production
+      - ALLOWED_HOSTS=mcarchive.seudominio.com,localhost,127.0.0.1
+      - CSRF_TRUSTED_ORIGINS=https://mcarchive.seudominio.com
+      - SECRET_KEY=chave_secreta_longa_e_aleatoria_para_producao
+      - DB_NAME=
+      - DB_SQLITE_PATH=/app/data/db.sqlite3
+      - SECURE_SSL_REDIRECT=False
+      - SESSION_COOKIE_SECURE=False
+      - CSRF_COOKIE_SECURE=False
+    volumes:
+      - /caminho/no/host/sqlite_data:/app/data
+      - /caminho/no/host/media_data:/app/media
+      - /caminho/no/host/logs_data:/app/logs
+      - /caminho/no/host/static_data:/app/staticfiles
+```
+
+No Nginx Proxy Manager, basta apontar para o IP do host com a porta `8180` e ativar seu certificado SSL.
 
 ---
 
